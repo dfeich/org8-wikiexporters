@@ -1,0 +1,41 @@
+* Overview
+  This repository provides two exporters for [[http://orgmode.org/][Emacs Org 8.x]]. They allow
+  exporting an org document to a TiddlyWiki buffer or to a Foswiki/Twiki
+  buffer.
+
+  Both exporters are loosely based on the ox-confluence exporter by
+  Sébastien Delafond
+
+* Installation
+
+  Put the *.el files into your load-path and the following into your
+  ~/.emacs, or .emacs.d/init.el:
+
+#+BEGIN_SRC emacs-lisp
+  (require 'ox-tiddly)
+  (require 'ox-twiki)  
+#+END_SRC
+
+* Usage
+
+  The following interactive commands will become available in Emacs
+  - org-tiddly-export-as-tiddly
+  - org-twiki-export-as-twiki
+
+  So, when you are in an org buffer and want to export to a
+  Twiki/Foswiki formatted buffer, type
+
+  #+BEGIN_EXAMPLE
+M-x org-twiki-export-as-twiki RET
+  #+END_EXAMPLE
+
+* Notes
+
+  The code also contains new shortcut keys for the exporter screen
+  (reached by C-c C-e).  These could possibly clash with other
+  expansion modules. Actually, I think they should only get
+  explicitely set, once a converter has made it into the Org standard
+  code base, but I left them in for my own convenience.
+
+  I hope that these plugins will be useful to others. Org is a
+  fantastic piece of software with a great community.
