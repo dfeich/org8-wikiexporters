@@ -142,8 +142,11 @@
   contents)
 
 (defun org-twiki-src-block (src-block contents info)
-  (format "%%STARTCODE%%\n%s%%ENDCODE%%\n"
-	  (org-export-format-code-default src-block info))
+  (let* ((srclang (org-element-property :language src-block))
+	 (lang (cond ((equal srclang "shell") "bash")
+		     (t srclang))))
+    (format "%%CODE{\"%s\"}%%\n%s%%ENDCODE%%\n"	lang    
+	    (org-export-format-code-default src-block info)))
   )
 
 (defun org-twiki-strike-through (strike-through contents info)
