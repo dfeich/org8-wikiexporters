@@ -112,9 +112,19 @@
   (format "//%s//" contents))
 
 (defun org-twiki-fixed-width (fixed-width contents info)
-  (format "=%s=" contents))
+  "A fixed-width line starts with a colon character and a
+whitespace or an end of line. Fixed width areas can contain any
+number of consecutive fixed-width lines."
+  (format "\n<verbatim>\n%s</verbatim>\n"
+	  (org-element-property :value fixed-width))
+)
 
 (defun org-twiki-verbatim (verbatim contents info)
+  "Transcode VERBATIM from Org to Twiki.
+CONTENTS is nil.  INFO is a plist holding contextual
+information.
+
+lines using the =string= markup end up here"
   (format "=%s=" (org-element-property :value verbatim)))
 
 (defun org-twiki-headline (headline contents info)
