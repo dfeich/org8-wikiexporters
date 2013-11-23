@@ -1,7 +1,7 @@
 ;;; org Twiki and Foswiki export --- Derek Feichtinger
 ;;;                                  <derek.feichtinger@psi.ch>
 
-;; based on ox-confluence by Sébastien Delafond
+;; originally based on ox-confluence by Sébastien Delafond
 
 ;;; Commentary:
 ;;
@@ -43,6 +43,8 @@
 		     (verbatim . org-twiki-verbatim))
   ;; :menu-entry '(?w 1
   ;; 		   ((?f "As Foswiki/Twiki buffer" org-twiki-export-as-twiki)))
+  :options-alist
+  '((:twiki-code-beautify "TWIKI_CODE_BEAUTIFY" nil org-twiki-code-beautify t))
   )
 
 ;;; User Configuration Variables
@@ -63,6 +65,34 @@ against link's path."
   :package-version '(Org . "8.2.3")
   :type '(alist :key-type (string :tag "Type")
 		:value-type (regexp :tag "Path")))
+
+(defcustom org-twiki-code-mappings
+  '(("sh" . "bash")
+    ("c++" . "cpp")
+    ("c" . "cpp")
+    ("css" . "css")
+    ("java" . "java")
+    ("js" . "javascript")
+    ("perl" . "perl")
+    ("python" . "python"))
+  "mappings for translating babel blocks into twiki beautifier
+code blocks."
+  :group 'org-export-twiki
+  :version "24.3.1"
+  :package-version '(Org . "8.2.3")
+  :type '(alist :key-type (string :tag "org babel")
+		:value-type (string :tag "twiki export"))
+ )
+
+(defcustom org-twiki-code-beautify nil
+  "If true, babel exports will be exported as %CODE% blocks. This
+requires the twiki beautify plugin"
+  :group 'org-export-twiki
+  :version "24.3.1"
+  :package-version '(Org . "8.2.3")
+  :type 'boolean
+ )
+
 
 ;;;;;;;;;;
 ;; debugging helpers
@@ -184,12 +214,16 @@ on the twiki."
   contents)
 
 (defun org-twiki-src-block (src-block contents info)
+  "Transcode an INLINE-SRC-BLOCK element from Org to Twiki.
+CONTENTS holds the contents of the item.  INFO is a plist holding
+contextual information."
   (let* ((srclang (org-element-property :language src-block))
-	 (lang (cond ((equal srclang "shell") "bash")
-		     (t srclang))))
-    (format "%%CODE{\"%s\"}%%\n%s%%ENDCODE%%\n"	lang    
-	    (org-export-format-code-default src-block info)))
-  )
+	 (lang (assoc-default srclang org-twiki-code-mappings)))
+    (if (and lang (string= "t" (plist-get info :twiki-code-beautify)))
+	(format "%%CODE{\"%s\"}%%\n%s%%ENDCODE%%\n"	lang    
+		(org-export-format-code-default src-block info))
+      (format "\n<verbatim>\n%s</verbatim>\n"
+	      (org-export-format-code-default src-block info)))))
 
 (defun org-twiki-strike-through (strike-through contents info)
   (format "-%s-" contents))
@@ -256,7 +290,13 @@ file-local settings.
 
 Export is done in a buffer named \"*Org Twiki Export*\", which
 will be displayed when `org-export-show-temporary-export-buffer'
-is non-nil."
+is non-nil.
+
+You can set the following options inside of the document:
+#+TWIKI_CODE_BEAUTIFY: t/nil
+   controls whether code blocks are exported as %CODE{}% twiki
+   blocks (requires the beautify twiki plugin).
+"
   (interactive)
   (org-export-to-buffer 'twiki "*Org Twiki Export*"
     async subtreep visible-only body-only ext-plist (lambda () (text-mode))))
