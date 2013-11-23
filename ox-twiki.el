@@ -17,8 +17,7 @@
 ;;; Code:
 
 (require 'ox)
-;;(require 'ox-ascii)
-(require 'ox-tiddly)
+(require 'ox-ascii)
 
 ;; Define the backend itself
 (org-export-define-derived-backend 'twiki 'ascii
@@ -42,14 +41,33 @@
 		     (template . org-twiki-template)
 		     (underline . org-twiki-underline)
 		     (verbatim . org-twiki-verbatim))
-  :menu-entry '(?w 1
-		   ((?f "As Foswiki/Twiki buffer" org-twiki-export-as-twiki))))
+  ;; :menu-entry '(?w 1
+  ;; 		   ((?f "As Foswiki/Twiki buffer" org-twiki-export-as-twiki)))
+  )
+
+;;; User Configuration Variables
+
+(defgroup org-export-twiki nil
+  "Options for exporting Org mode files to Twiki."
+  :tag "Org Export Twiki"
+  :group 'org-export)
+
+(defcustom org-twiki-inline-image-rules
+  '(("file" . "\\.\\(jpeg\\|jpg\\|png\\|gif\\|svg\\)\\'"))
+  "Rules characterizing image files that can be inlined into a Twiki page.
+A rule consists of an association list whose key is the type of
+link to consider, and value is a regexp that will be matched
+against link's path."
+  :group 'org-export-twiki
+  :version "24.3.1"
+  :package-version '(Org . "8.2.3")
+  :type '(alist :key-type (string :tag "Type")
+		:value-type (regexp :tag "Path")))
 
 ;;;;;;;;;;
 ;; debugging helpers
 (defun org-enclose-element-property (plist property tag)
-  (format "<%s>%s</%s>" tag (org-element-property property plist) tag)
-)
+  (format "<%s>%s</%s>" tag (org-element-property property plist) tag))
 
 (defun plist-get-keys (pl)
   (let (result)
@@ -138,10 +156,24 @@ lines using the =string= markup end up here"
               ""))))
 
 (defun org-twiki-link (link desc info)
+  "Transcode a LINK object from Org to Twiki.
+
+DESC is the description part of the link, or the empty string.
+INFO is a plist holding contextual information.  See
+`org-export-data'.  If the link is pointing to a local image
+file, the twiki page will contain a src img link to an attachment
+on the twiki."
+  ;; TODO: Solve similar to ox-html.el using org-export-inline-image-p
   (let ((raw-link (org-element-property :raw-link link)))
-    (concat "[[" raw-link
-            (when (org-string-nw-p desc) (format "][%s" desc))
-            "]]")))
+    (if (org-export-inline-image-p link org-twiki-inline-image-rules)
+	(let ((fname 
+	       (file-name-nondirectory 
+		(replace-regexp-in-string "^.*:" "" raw-link))))
+	  (format "<img src=\"%%ATTACHURLPATH%%/%s\" alt=\"%s\">"
+		  fname fname))
+      (concat "[[" raw-link
+	      (when (org-string-nw-p desc) (format "][%s" desc))
+	      "]]"))))
 
 ;; replace all newlines in paragraphs (includes list item text, which
 ;; also constitutes a paragraph
