@@ -43,8 +43,9 @@
 		     (underline . org-tiddly-underline)
 		     (verbatim . org-tiddly-verbatim))
   :export-block "HTML" 
-  :menu-entry '(?w "Export to Wiki"
-		   ((?t "As TiddlyWiki buffer" org-tiddly-export-as-tiddly))))
+  ;; :menu-entry '(?w "Export to Wiki"
+  ;; 		   ((?t "As TiddlyWiki buffer" org-tiddly-export-as-tiddly)))
+)
 
 ;;;;;;;;;;
 ;; debugging helpers
@@ -120,7 +121,8 @@ channel."
   (format "//%s//" contents))
 
 (defun org-tiddly-fixed-width (fixed-width contents info)
-  (format "\{\{\{%s\}\}\}" contents))
+  (format "\{\{\{\n%s\}\}\}"
+	 (org-element-property :value fixed-width)))
 
 (defun org-tiddly-verbatim (verbatim contents info)
   (format "\{\{\{%s\}\}\}" (org-element-property :value verbatim)))
