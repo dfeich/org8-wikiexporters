@@ -35,7 +35,7 @@
 ;; M-x org-tiddly-export-as-tiddly RET
 ;;
 ;; based on ox-confluence by Sébastien Delafond
-
+;;; Code:
 (require 'ox)
 (require 'ox-ascii)
 

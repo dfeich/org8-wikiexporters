@@ -40,7 +40,7 @@
 ;;    blocks (requires the beautify twiki plugin).
 ;;
 ;; originally based on ox-confluence by Sébastien Delafond
-
+;;; Code:
 (require 'ox)
 (require 'ox-ascii)
 
