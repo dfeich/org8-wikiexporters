@@ -328,4 +328,4 @@ You can set the following options inside of the document:
 
 (provide 'ox-twiki)
 
-;; ox-twiki.el ends here
+;;; ox-twiki.el ends here
