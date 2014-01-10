@@ -259,16 +259,22 @@ contextual information."
 (defun org-twiki-table-row  (table-row contents info)
   (concat
    (if (org-string-nw-p contents) (format "|%s" contents)
-     "")
-   (when (org-export-table-row-ends-header-p table-row info)
-     "|")))
+     "")))
 
 (defun org-twiki-table-cell  (table-cell contents info)
   (let ((table-row (org-export-get-parent table-cell)))
     (concat
+     ;; org-export-table-row-starts-header-p considers a table to have
+     ;; a header, if it contains a horizontal line anywhere. So, even
+     ;; a table with a single horizontal line before the last row will
+     ;; be considered to have a header. Should be improved.
      (when (org-export-table-row-starts-header-p table-row info)
-       "|")
-     contents "|")))
+       "*")
+     contents
+     (when (org-export-table-row-starts-header-p table-row info)
+       "*")
+     "|")
+    ))
 
 (defun org-twiki-template (contents info)
   (let ((depth (plist-get info :with-toc)))
