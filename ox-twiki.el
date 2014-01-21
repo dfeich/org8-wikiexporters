@@ -182,7 +182,7 @@ requires the twiki beautify plugin"
   )
 
 (defun org-twiki-italic (italic contents info)
-  (format "//%s//" contents))
+  (format "_%s_" contents))
 
 (defun org-twiki-fixed-width (fixed-width contents info)
   "A fixed-width line starts with a colon character and a
