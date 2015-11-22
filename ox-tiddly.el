@@ -5,7 +5,7 @@
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org8-wikiexporters
-;; Package-Requires: ((org "8")) 
+;; Package-Requires: ((org "8") (cl-lib "0.5"))
 ;; Version: 0.1.20131124
 
 ;; This file is not part of GNU Emacs.
@@ -38,6 +38,7 @@
 ;;; Code:
 (require 'ox)
 (require 'ox-ascii)
+(require 'cl-lib)
 
 ;; Define the backend itself
 (org-export-define-derived-backend 'tiddly 'ascii
@@ -75,8 +76,8 @@
 
 (defun plist-get-keys (pl)
   (let (result)
-      (loop for (key val) on pl by #'cddr
-	    do (push key result))
+      (cl-loop for (key val) on pl by #'cddr
+               do (push key result))
       result)
 )
 ;;;;;;;;;;
