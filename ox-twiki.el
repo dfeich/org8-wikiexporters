@@ -174,6 +174,10 @@ requires the twiki beautify plugin"
      ;; (format "number: %s;\n" indices)	    
      (make-string (* 3  (length indices)) ? )
      (if (eq ltype 'ordered) "1. " "* ")
+     (case (org-element-property :checkbox item)
+       (on "%ICON{checked}% ")
+       (off "%ICON{unchecked}% ")
+       (trans "%ICON{unchecked}% "))
      contents))
 )
 
