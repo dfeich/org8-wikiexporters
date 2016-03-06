@@ -1,12 +1,12 @@
 ;;; ox-twiki.el --- org Twiki and Foswiki export
 
-;; Copyright (C) 2013 Derek Feichtinger
- 
+;; Copyright (C) 2013, 2016 Derek Feichtinger
+
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org8-wikiexporters
 ;; Package-Requires: ((org "8") (cl-lib "0.5"))
-;; Version: 0.1.20131124
+;; Version: 0.1.20160306
 
 ;; This file is not part of GNU Emacs.
 
@@ -101,23 +101,22 @@ against link's path."
     ("js" . "javascript")
     ("perl" . "perl")
     ("python" . "python"))
-  "mappings for translating babel blocks into twiki beautifier
-code blocks."
+  "Mappings for translating babel blocks into twiki beautifier code blocks."
   :group 'org-export-twiki
   :version "24.3.1"
   :package-version '(Org . "8.2.3")
   :type '(alist :key-type (string :tag "org babel")
 		:value-type (string :tag "twiki export"))
- )
+  )
 
 (defcustom org-twiki-code-beautify nil
-  "If true, babel exports will be exported as %CODE% blocks. This
-requires the twiki beautify plugin"
+  "If true, babel exports will be exported as %CODE% blocks.
+This requires the twiki beautify plugin"
   :group 'org-export-twiki
   :version "24.3.1"
   :package-version '(Org . "8.2.3")
   :type 'boolean
- )
+  )
 
 
 ;;;;;;;;;;
@@ -138,40 +137,25 @@ requires the twiki beautify plugin"
   (format "*%s*" contents))
 
 (defun org-twiki-empty (empty contents info)
+  "Return an empty string."
   "")
 
 (defun org-twiki-plain-list (plain-list contents info)
-  ;; (format "<TYPE>%s</TYPE>\n<STRUCTURE>%s</STRUCTURE>\n<CONTENTS>%s</CONTENTS>\n<PLAIN-LIST>%s</PLAIN-LIST>"
-  ;; 	  (org-element-property :type plain-list)
-  ;; 	  (org-element-property :structure plain-list)
-  ;; 	  contents plain-list)
-
-  ;; (concat (org-enclose-element-property plain-list :type "TYPE")
-  ;; 	  (org-enclose-element-property plain-list :structure "STRUCTURE")
-  ;; 	  (format "\n<CONTENTS>%s</CONTENTS>" contents))
   contents
   )
 
 (defun org-twiki-item (item contents info)
-  ;; (message "<ITEM_PROPS>%s</ITEM_PROPS>" (plist-get-keys (cadr item)))
-  ;; (message "<ITEM_CONTENTS>%s</ITEM_CONTENTS>" contents)
   (let* ((beg (org-element-property :begin item))
 	 (struct (org-element-property :structure item))
 	 (itemstruct (assoc beg struct))
 	 (parent (org-element-property :parent item))
 	 (ltype (org-element-property :type parent))
 	 (indices (org-list-get-item-number
-					(org-element-property :begin item)
-					struct
-					(org-list-prevs-alist struct)
-					(org-list-parents-alist struct))))
-    (concat 
-     ;; (format "beg: %s; " beg)
-     ;; (format "str: %s; " itemstruct)
-     ;; (format "type: %s; " ltype)
-     ;; (format "\n  olpa: %s; " (org-list-prevs-alist struct))
-     ;; (format "\n  olpara: %s; " (org-list-parents-alist struct))
-     ;; (format "number: %s;\n" indices)	    
+		   (org-element-property :begin item)
+		   struct
+		   (org-list-prevs-alist struct)
+		   (org-list-parents-alist struct))))
+    (concat
      (make-string (* 3  (length indices)) ? )
      (if (eq ltype 'ordered) "1. " "* ")
      (case (org-element-property :checkbox item)
@@ -179,7 +163,7 @@ requires the twiki beautify plugin"
        (off "%ICON{unchecked}% ")
        (trans "%ICON{unchecked}% "))
      contents))
-)
+  )
 
 (defun org-twiki-example-block (example-block contents info)
   (format "\n<verbatim>\n%s</verbatim>\n"
@@ -226,8 +210,8 @@ on the twiki."
   ;; TODO: Solve similar to ox-html.el using org-export-inline-image-p
   (let ((raw-link (org-element-property :raw-link link)))
     (if (org-export-inline-image-p link org-twiki-inline-image-rules)
-	(let ((fname 
-	       (file-name-nondirectory 
+	(let ((fname
+	       (file-name-nondirectory
 		(replace-regexp-in-string "^.*:" "" raw-link))))
 	  (format "<img src=\"%%ATTACHURLPATH%%/%s\" alt=\"%s\">"
 		  fname fname))
@@ -250,7 +234,7 @@ contextual information."
   (let* ((srclang (org-element-property :language src-block))
 	 (lang (assoc-default srclang org-twiki-code-mappings)))
     (if (and lang (string= "t" (plist-get info :twiki-code-beautify)))
-	(format "%%CODE{\"%s\"}%%\n%s%%ENDCODE%%\n"	lang    
+	(format "%%CODE{\"%s\"}%%\n%s%%ENDCODE%%\n" lang
 		(org-export-format-code-default src-block info))
       (format "\n<verbatim>\n%s</verbatim>\n"
 	      (org-export-format-code-default src-block info)))))
@@ -298,7 +282,7 @@ contextual information."
 ;; main interactive entrypoint
 ;;;###autoload
 (defun org-twiki-export-as-twiki
-  (&optional async subtreep visible-only body-only ext-plist)
+    (&optional async subtreep visible-only body-only ext-plist)
   "Export current buffer to a text buffer.
 
 If narrowing is active in the current buffer, only export its
@@ -331,8 +315,8 @@ is non-nil.
 You can set the following options inside of the document:
 #+TWIKI_CODE_BEAUTIFY: t/nil
    controls whether code blocks are exported as %CODE{}% twiki
-   blocks (requires the beautify twiki plugin).
-"
+   blocks (requires the beautify twiki plugin)."
+
   (interactive)
   (org-export-to-buffer 'twiki "*Org Twiki Export*"
     async subtreep visible-only body-only ext-plist (lambda () (text-mode))))
