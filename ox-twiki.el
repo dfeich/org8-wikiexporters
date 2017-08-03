@@ -243,7 +243,11 @@ contextual information."
   (format "-%s-" contents))
 
 (defun org-twiki-table (table contents info)
-  contents)
+  (let ((caption (org-export-get-caption table)))
+    (concat
+     (when caption (format "%%TABLE{caption=\"%s\"}%%\n"
+			   (org-export-data caption info)))
+     contents)))
 
 (defun org-twiki-table-row  (table-row contents info)
   (concat
