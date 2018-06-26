@@ -53,7 +53,7 @@
 		     (item . org-tiddly-item)
 		     (link . org-tiddly-link)
 		     (paragraph . org-tiddly-paragraph)
-;;		     (plain-list . org-tiddly-plain-list)
+		     ;;		     (plain-list . org-tiddly-plain-list)
 		     (section . org-tiddly-section)
 		     (src-block . org-tiddly-src-block)
 		     (strike-through . org-tiddly-strike-through)
@@ -63,10 +63,9 @@
 		     (template . org-tiddly-template)
 		     (underline . org-tiddly-underline)
 		     (verbatim . org-tiddly-verbatim))
-  :export-block "HTML" 
   ;; :menu-entry '(?w "Export to Wiki"
   ;; 		   ((?t "As TiddlyWiki buffer" org-tiddly-export-as-tiddly)))
-)
+  )
 
 ;;;;;;;;;;
 ;; debugging helpers
