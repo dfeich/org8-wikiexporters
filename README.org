@@ -1,5 +1,5 @@
 * Overview
-  [[http://melpa.org/#/ox-twiki][file:https://melpa.org/packages/ox-twiki-badge.svg]]
+  [[http://melpa.org/#/ox-twiki][file:https://melpa.org/packages/ox-tiddly-badge.svg]]
 
   This repository provides two exporters for [[http://orgmode.org/][Emacs Org 8.x]]. They allow
   exporting an org document to a TiddlyWiki buffer or to a Foswiki/Twiki
