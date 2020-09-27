@@ -1,12 +1,12 @@
-;;; ox-twiki.el --- org Twiki and Foswiki export
+;;; ox-twiki.el --- Org Twiki and Foswiki export
 
 ;; Copyright (C) 2013, 2016 Derek Feichtinger
 
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org8-wikiexporters
-;; Package-Requires: ((org "8") (cl-lib "0.5"))
-;; Version: 0.1.20160306
+;; Package-Requires: ((org "8") (emacs "24.4"))
+;; Version: 0.1.20200927
 
 ;; This file is not part of GNU Emacs.
 
@@ -57,7 +57,7 @@
 		     (item . org-twiki-item)
 		     (link . org-twiki-link)
 		     (paragraph . org-twiki-paragraph)
-;;		     (plain-list . org-twiki-plain-list)
+		     ;;		     (plain-list . org-twiki-plain-list)
 		     (section . org-twiki-section)
 		     (src-block . org-twiki-src-block)
 		     (strike-through . org-twiki-strike-through)
@@ -70,8 +70,7 @@
   ;; :menu-entry '(?w 1
   ;; 		   ((?f "As Foswiki/Twiki buffer" org-twiki-export-as-twiki)))
   :options-alist
-  '((:twiki-code-beautify "TWIKI_CODE_BEAUTIFY" nil org-twiki-code-beautify t))
-  )
+  '((:twiki-code-beautify "TWIKI_CODE_BEAUTIFY" nil org-twiki-code-beautify t)))
 
 ;;; User Configuration Variables
 
@@ -106,8 +105,7 @@ against link's path."
   :version "24.3.1"
   :package-version '(Org . "8.2.3")
   :type '(alist :key-type (string :tag "org babel")
-		:value-type (string :tag "twiki export"))
-  )
+		:value-type (string :tag "twiki export")))
 
 (defcustom org-twiki-code-beautify nil
   "If true, babel exports will be exported as %CODE% blocks.
@@ -115,21 +113,19 @@ This requires the twiki beautify plugin"
   :group 'org-export-twiki
   :version "24.3.1"
   :package-version '(Org . "8.2.3")
-  :type 'boolean
-  )
+  :type 'boolean)
 
 
 ;;;;;;;;;;
 ;; debugging helpers
-(defun org-enclose-element-property (plist property tag)
+(defun ox-twiki--enclose-element-property (plist property tag)
   (format "<%s>%s</%s>" tag (org-element-property property plist) tag))
 
-(defun plist-get-keys (pl)
+(defun ox-twiki--plist-get-keys (pl)
   (let (result)
-      (cl-loop for (key val) on pl by #'cddr
-               do (push key result))
-      result)
-)
+    (cl-loop for (key val) on pl by #'cddr
+	     do (push key result))
+    result))
 ;;;;;;;;;;
 
 ;; All the functions we use
@@ -141,8 +137,7 @@ This requires the twiki beautify plugin"
   "")
 
 (defun org-twiki-plain-list (plain-list contents info)
-  contents
-  )
+  contents)
 
 (defun org-twiki-item (item contents info)
   (let* ((beg (org-element-property :begin item))
@@ -158,17 +153,15 @@ This requires the twiki beautify plugin"
     (concat
      (make-string (* 3  (length indices)) ? )
      (if (eq ltype 'ordered) "1. " "* ")
-     (case (org-element-property :checkbox item)
+     (cl-case (org-element-property :checkbox item)
        (on "%ICON{checked}% ")
        (off "%ICON{unchecked}% ")
        (trans "%ICON{unchecked}% "))
-     contents))
-  )
+     contents)))
 
 (defun org-twiki-example-block (example-block contents info)
   (format "\n<verbatim>\n%s</verbatim>\n"
-	  (org-export-format-code-default example-block info))
-  )
+	  (org-export-format-code-default example-block info)))
 
 (defun org-twiki-italic (italic contents info)
   (format "_%s_" contents))
@@ -178,8 +171,7 @@ This requires the twiki beautify plugin"
 whitespace or an end of line. Fixed width areas can contain any
 number of consecutive fixed-width lines."
   (format "\n<verbatim>\n%s</verbatim>\n"
-	  (org-element-property :value fixed-width))
-)
+	  (org-element-property :value fixed-width)))
 
 (defun org-twiki-verbatim (verbatim contents info)
   "Transcode VERBATIM from Org to Twiki.
@@ -266,8 +258,7 @@ contextual information."
      contents
      (when (org-export-table-row-starts-header-p table-row info)
        "*")
-     "|")
-    ))
+     "|")))
 
 (defun org-twiki-template (contents info)
   (let ((depth (plist-get info :with-toc)))

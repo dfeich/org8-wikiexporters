@@ -1,12 +1,12 @@
-;;; ox-tiddly.el --- org TiddlyWiki exporter
+;;; ox-tiddly.el --- Org TiddlyWiki exporter
 
 ;; Copyright (C) 2013 Derek Feichtinger
- 
+
 ;; Author: Derek Feichtinger <derek.feichtinger@psi.ch>
 ;; Keywords: org
 ;; Homepage: https://github.com/dfeich/org8-wikiexporters
-;; Package-Requires: ((org "8") (cl-lib "0.5"))
-;; Version: 0.1.20131124
+;; Package-Requires: ((org "8") (emacs "24.4"))
+;; Version: 0.1.20200927
 
 ;; This file is not part of GNU Emacs.
 
@@ -69,16 +69,14 @@
 
 ;;;;;;;;;;
 ;; debugging helpers
-(defun org-enclose-element-property (plist property tag)
-  (format "<%s>%s</%s>" tag (org-element-property property plist) tag)
-)
+(defun ox-tiddly---enclose-element-property (plist property tag)
+  (format "<%s>%s</%s>" tag (org-element-property property plist) tag))
 
-(defun plist-get-keys (pl)
+(defun ox-tiddly--plist-get-keys (pl)
   (let (result)
-      (cl-loop for (key val) on pl by #'cddr
-               do (push key result))
-      result)
-)
+    (cl-loop for (key val) on pl by #'cddr
+	     do (push key result))
+    result))
 ;;;;;;;;;;
 
 ;; All the functions we use
@@ -89,46 +87,27 @@
   "")
 
 (defun org-tiddly-plain-list (plain-list contents info)
-  ;; (format "<TYPE>%s</TYPE>\n<STRUCTURE>%s</STRUCTURE>\n<CONTENTS>%s</CONTENTS>\n<PLAIN-LIST>%s</PLAIN-LIST>"
-  ;; 	  (org-element-property :type plain-list)
-  ;; 	  (org-element-property :structure plain-list)
-  ;; 	  contents plain-list)
-
-  ;; (concat (org-enclose-element-property plain-list :type "TYPE")
-  ;; 	  (org-enclose-element-property plain-list :structure "STRUCTURE")
-  ;; 	  (format "\n<CONTENTS>%s</CONTENTS>" contents))
-  contents
-  )
+  contents)
 
 (defun org-tiddly-item (item contents info)
-  ;; (message "<ITEM_PROPS>%s</ITEM_PROPS>" (plist-get-keys (cadr item)))
-  ;; (message "<ITEM_CONTENTS>%s</ITEM_CONTENTS>" contents)
   (let* ((beg (org-element-property :begin item))
 	 (struct (org-element-property :structure item))
 	 (itemstruct (assoc beg struct))
 	 (parent (org-element-property :parent item))
 	 (ltype (org-element-property :type parent))
 	 (indices (org-list-get-item-number
-					(org-element-property :begin item)
-					struct
-					(org-list-prevs-alist struct)
-					(org-list-parents-alist struct))))
-    (concat 
-     ;; (format "beg: %s; " beg)
-     ;; (format "str: %s; " itemstruct)
-     ;; (format "type: %s; " ltype)
-     ;; (format "\n  olpa: %s; " (org-list-prevs-alist struct))
-     ;; (format "\n  olpara: %s; " (org-list-parents-alist struct))
-     ;; (format "number: %s;\n" indices)	    
+		   (org-element-property :begin item)
+		   struct
+		   (org-list-prevs-alist struct)
+		   (org-list-parents-alist struct))))
+    (concat
      (if (eq ltype 'ordered) (make-string (length indices) ?#)
        (make-string (length indices) ?*))
-     " " contents))
-)
+     " " contents)))
 
 (defun org-tiddly-example-block (example-block contents info)
   (format "\n\{\{\{\n%s\}\}\}\n"
-	  (org-export-format-code-default example-block info))
-  )
+	  (org-export-format-code-default example-block info)))
 
 (defun org-tiddly-export-block (export-block contents info)
   "Transcode a EXPORT-BLOCK element from Org to HTML.
@@ -174,8 +153,7 @@ channel."
   contents)
 
 (defun org-tiddly-src-block (src-block contents info)
-  (org-tiddly-example-block src-block contents info)
-  )
+  (org-tiddly-example-block src-block contents info))
 
 (defun org-tiddly-strike-through (strike-through contents info)
   (format "==%s==" contents))
