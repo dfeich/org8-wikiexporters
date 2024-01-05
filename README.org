@@ -8,6 +8,12 @@
   Both exporters are loosely based on the ox-confluence exporter by
   Sébastien Delafond
 
+  *IMPORTANT NOTE:* Both exporters just convert org code to
+  Tiddly/Twiki syntax, the exported code to be copied into a Tiddler
+  or a Twiki page. So, exporting to TiddlyWiki will not provide you
+  with a full standalone TiddlyWiki file, but just with the contents
+  for Tiddlers.
+  
 * Installation
 
   Put the *.el files into your load-path and the following into your
